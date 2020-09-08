@@ -1,0 +1,13 @@
+user.email=gdavrieux@santandertecnologia.com.ar
+user.name=Guido
+user.mail=gdavrieux@santandertecnologia.com.ar
+http.proxy=http://proxy.ar.bsch:8080
+http.sslverify=false
+
+
+quitar proxy:
+git config --global --unset http.proxy
+
+poner proxy de vuelta:
+
+git config --global http.proxy http://proxy.ar.bsch:8080

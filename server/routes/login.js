@@ -30,14 +30,14 @@ app.post('/login', (req, res) => {
 
         }
 
-        if (!bcryptjs.compareSync(body.password, usuarioDB.password)) {
+        /* if (!bcryptjs.compareSync(body.password, usuarioDB.password)) {
 
-            return res.status(400).json({
-                ok: false,
-                err: { message: 'Usuario o (contraseña) incorrectos' }
-            });
+             return res.status(400).json({
+                 ok: false,
+                 err: { message: 'Usuario o (contraseña) incorrectos' }
+             });
 
-        }
+         }*/
 
         let token = jwt.sign({
             usuario: usuarioDB

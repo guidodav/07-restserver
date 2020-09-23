@@ -5,7 +5,10 @@ const mongoose = require('mongoose');
 const app = express()
 
 
-app.use(require('./routes/usuario'));
+app.use(require('./routes/index')); //para referenciar al index donde se encuentran las rutas validas a utilizar (usuario, login, etc
+
+
+
 
 
 

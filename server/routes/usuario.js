@@ -10,6 +10,9 @@ const bcryptjs = require('bcryptjs');
 
 const _ = require('underscore');
 
+const { verificaToken, verificaAdmin_Rol } = require('../middlewares/autenticacion');
+
+
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -19,7 +22,14 @@ app.use(bodyParser.json());
 
 
 
-app.get('/usuario', function(req, res) {
+app.get('/usuario', [verificaToken], function(req, res) { //no estoy ejecutando la funcion de middleware, estoy indicando que ese es el middleware que se va a usar
+
+    /* return res.json({
+         usuario: req.usuario,
+         nombre: req.usuario.nombre,
+         email: req.usuario.email
+     });*/
+
     let desde = Number(req.query.desde) || 0;
 
     let limite = Number(req.query.limite) || 5;
@@ -50,7 +60,7 @@ app.get('/usuario', function(req, res) {
 })
 
 
-app.post('/usuario', function(req, res) {
+app.post('/usuario', [verificaToken, verificaAdmin_Rol], function(req, res) {
     let body = req.body
     let usuario = new Usuario({
         nombre: body.nombre,
@@ -85,7 +95,7 @@ app.post('/usuario', function(req, res) {
     }*/
 });
 
-app.put('/usuario/:id', function(req, res) {
+app.put('/usuario/:id', [verificaToken, verificaAdmin_Rol], function(req, res) {
     let id = req.params.id;
     let body = _.pick(req.body, ['nombre', 'email', 'rol', 'estado', 'img']); //permite poner que campos podemos actualizar con put
 
@@ -141,9 +151,10 @@ app.put('/usuario/:id', function(req, res) {
 
 
 
-app.delete('/usuario/:id', function(req, res) {
+app.delete('/usuario/:id', [verificaToken, verificaAdmin_Rol], function(req, res) {
     let id = req.params.id;
     let body = _.pick(req.body);
+
     body.estado = false;
     Usuario.findByIdAndUpdate(id, body, (err, usuarioBorrado) => {
         usuarioBorrado.estado = false;
@@ -172,7 +183,7 @@ app.delete('/usuario/:id', function(req, res) {
 
     });
     //res.json('delete usuario')
-})
+});
 
 
 module.exports = app;

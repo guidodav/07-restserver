@@ -63,14 +63,18 @@ app.post('/login', (req, res) => {
 
 
 async function verify(token) {
+
     const ticket = await client.verifyIdToken({
         idToken: token,
         audience: process.env.CLIENT_ID, // Specify the CLIENT_ID of the app that accesses the backend
         // Or, if multiple clients access the backend:
         //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
+
     });
+
     const payload = ticket.getPayload();
     const userid = payload['sub'];
+
     // If request specified a G Suite domain:
     // const domain = payload['hd'];
     console.log(payload.name);
@@ -82,20 +86,23 @@ async function verify(token) {
         img: payload.picture,
         google: true
     })
+
 }
 
 
 
 app.post('/google', async(req, res) => {
     let token = req.body.idtoken;
+
     let googleUser = await verify(token)
-        .catch(err => {
+        .catch(e => {
             return res.status(403).json({
                 ok: false,
-                err
+                err: e
             });
         });
-    res.json({ usuario: googleUser });
+
+    //res.json({ usuario: googleUser });
     Usuario.findOne({ email: googleUser.email }, (err, usuarioDB) => {
 
         if (err) {
@@ -107,6 +114,7 @@ app.post('/google', async(req, res) => {
         }
 
         if (usuarioDB) {
+
             if (usuarioDB.google === false) {
 
                 return res.status(400).json({
@@ -125,6 +133,7 @@ app.post('/google', async(req, res) => {
                     usuario: usuarioDB,
                     token
                 });
+                console.log('entro aqui8');
             }
         } else {
             //si el usuario no existe en la base de datos
@@ -134,6 +143,7 @@ app.post('/google', async(req, res) => {
             usuario.img = googleUser.picture;
             usuario.google = true;
             usuario.password = ':)';
+
             usuario.save((err, usuarioDB) => {
                 if (err) {
 
@@ -146,6 +156,7 @@ app.post('/google', async(req, res) => {
                 let token = jwt.sign({
                     usuario: usuarioDB
                 }, process.env.SEED, { expiresIn: process.env.CADUCIDAD_TOKEN });
+
                 return res.json({
                     ok: true,
                     usuario: usuarioDB,
